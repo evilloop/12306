@@ -114,7 +114,7 @@ class query:
                                             "status": True,
                                         }
                 else:
-                    print u"车次配置信息有误，或者返回数据异常，请检查 {}".format(station_ticket)
+                    print(u"车次配置信息有误，或者返回数据异常，请检查 {}".format(station_ticket))
         return {"code": ticket.FAIL_CODE, "status": False}
 
 

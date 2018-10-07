@@ -1,13 +1,22 @@
 # -*- coding=utf-8 -*-
-import httplib
+import sys
+
+PY3 = True if sys.version[0] == '3' else False
+
+if PY3:
+    from http import client as httplib
+    from http.cookiejar import LWPCookieJar
+    from urllib import request as urllib2
+else:
+    import httplib
+    import urllib2
+    from cookielib import LWPCookieJar
 import ssl
 import urllib
-import urllib2
-import sys
-from cookielib import LWPCookieJar
 
-reload(sys)
-sys.setdefaultencoding('UTF8')
+
+
+
 cookiejar = LWPCookieJar()
 cookiesuppor = urllib2.HTTPCookieProcessor(cookiejar)
 opener = urllib2.build_opener(cookiesuppor, urllib2.HTTPHandler)
@@ -28,12 +37,15 @@ def get(url):
         assert isinstance(result, object)
         return result
     except httplib.error as e:
-        print e
+        print(e)
         pass
     except urllib2.URLError as e:
-        print e
+        print(e)
         pass
-    except urllib2.HTTPBasicAuthHandler, urllib2.HTTPError:
+    except urllib2.HTTPBasicAuthHandler as e:
+        print(e)
+    except urllib2.HTTPError as e:
+        print(e)
         pass
 
 
@@ -59,5 +71,9 @@ def Post(url, data):
         return e
     except urllib2.URLError as e:
         return e
-    except urllib2.HTTPBasicAuthHandler, urllib2.HTTPError:
+    except urllib2.HTTPBasicAuthHandler as e:
+        print(e)
+        return ('error')
+    except urllib2.HTTPError as e:
+        print(e)
         return ('error')

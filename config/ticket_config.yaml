@@ -5,26 +5,26 @@ set:
   # - 2018-01-06
   # - 2018-01-07
   station_dates:
-    - "2018-09-28"
+    - "2018-10-8"
 
   # 过滤车次(list)，格式ex：
   # - "G1353"
   # - "G1329"
   station_trains:
-    - ""
+    - "G69"
 
 
   # 出发城市，比如深圳北，就填深圳就搜得到
-  from_station: ""
+  from_station: "北京"
 
   # 到达城市 比如深圳北，就填深圳就搜得到
-  to_station: ""
+  to_station: "驻马店"
 
   # 座位(list) 多个座位ex:
   # - "二等座"
   # - "一等座"
   set_type:
-    - ""
+    - "二等座"
 
   # 当余票小于乘车人，如果选择优先提交，则删减联系人和余票数一致在提交
   is_more_ticket: False
@@ -33,11 +33,12 @@ set:
   # - "张三"
   # - "李四"
   ticke_peoples:
-    - ""
+    - "张长珍"
+
   # 12306登录账号(list)
   12306account:
-    - user: ""
-    - pwd: ""
+    - user: "xzzhen4128"
+    - pwd: "1q2w3e4r"
 
 # 加入小黑屋时间，此功能为了防止僵尸票导致一直下单不成功错过正常的票
 ticket_black_list_time: 5

@@ -6,8 +6,6 @@ import sys
 import csv
 import requests
 from config import urlConf
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 class CDNProxy:
@@ -42,7 +40,7 @@ class CDNProxy:
                     city_re = re.compile(r"<li id=\"(\S+)\" class=\"PingListCent PingRLlist")
                     self.city_list = re.findall(city_re, rep.content)
                     if self.city_list:
-                        print self.city_list
+                        print(self.city_list)
                         break
             else:
                 pass

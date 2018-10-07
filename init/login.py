@@ -37,7 +37,7 @@ class GoLogin:
         }
         fresult = self.session.httpClint.send(codeCheck, codeCheckData)
         if "result_code" in fresult and fresult["result_code"] == "4":
-            print (u"验证码通过,开始登录..")
+            print(u"验证码通过,开始登录..")
             return True
         else:
             if "result_message" in fresult:

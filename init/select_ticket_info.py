@@ -25,8 +25,8 @@ from myException.ticketIsExitsException import ticketIsExitsException
 from myException.ticketNumOutException import ticketNumOutException
 from myUrllib.httpUtils import HTTPClient
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+
+PY3 = True if sys.version[0] == '3' else False
 
 
 class select:
@@ -64,9 +64,10 @@ class select:
         station_trains = ticket_info_config["set"]["station_trains"]
         ticket_black_list_time = ticket_info_config["ticket_black_list_time"]
         order_type = ticket_info_config["order_type"]
-        print u"*" * 20
-        print u"12306刷票小助手，最后更新于2018.9.21，请勿作为商业用途，交流群号：286271084"
-        print u"当前配置：\n出发站：{0}\n到达站：{1}\n乘车日期：{2}\n坐席：{3}\n是否有票优先提交：{4}\n乘车人：{5}\n" \
+        msgs = []
+        msgs.append(u"*" * 20)
+        msgs.append(u"12306刷票小助手，最后更新于2018.9.21，请勿作为商业用途，交流群号：286271084")
+        msgs.append(u"当前配置：\n出发站：{0}\n到达站：{1}\n乘车日期：{2}\n坐席：{3}\n是否有票优先提交：{4}\n乘车人：{5}\n" \
               u"刷新间隔：随机(1-3S)\n候选购买车次：{6}\n僵尸票关小黑屋时长：{7}\n 下单接口：{8}\n".format \
                 (
                 from_station,
@@ -78,8 +79,9 @@ class select:
                 ",".join(station_trains),
                 ticket_black_list_time,
                 order_type,
-            )
-        print u"*" * 20
+            ))
+        msgs.append(u"*" * 20)
+        print('\n'.join(msgs))
         return from_station, to_station, station_dates, set_type, is_more_ticket, ticke_peoples, station_trains, ticket_black_list_time, order_type
 
     def station_table(self, from_station, to_station):
@@ -95,8 +97,12 @@ class select:
         for i in range(0, len(info)):
             n_info = info[i].split('|')
             station_name[n_info[1]] = n_info[2]
-        from_station = station_name[from_station.encode("utf8")]
-        to_station = station_name[to_station.encode("utf8")]
+        if PY3:
+            from_station = station_name[from_station.decode()]
+            to_station = station_name[to_station.decode()]
+        else:
+            from_station = station_name[from_station.encode("utf8")]
+            to_station = station_name[to_station.encode("utf8")]
         return from_station, to_station
 
     def call_login(self, auth=False):
@@ -229,7 +235,7 @@ class select:
                 else:
                     random_time = round(random.uniform(1, 3), 2)
                     time.sleep(random_time)
-                    print u"正在第{0}次查询 随机停留时长：{6} 乘车日期: {1} 车次：{2} 查询无票 cdn轮询IP：{4}当前cdn总数：{5} 总耗时：{3}ms".format(num,
+                    print(u"正在第{0}次查询 随机停留时长：{6} 乘车日期: {1} 车次：{2} 查询无票 cdn轮询IP：{4}当前cdn总数：{5} 总耗时：{3}ms".format(num,
                                                                                                                 ",".join(
                                                                                                                     self.station_dates),
                                                                                                                 ",".join(
@@ -239,21 +245,21 @@ class select:
                                                                                                                 wrapcache.get("cdn"),
                                                                                                                 len(
                                                                                                                     self.cdn_list),
-                                                                                                                random_time)
+                                                                                                                random_time))
             except PassengerUserException as e:
-                print e.message
+                print(e.message)
                 break
             except ticketConfigException as e:
-                print e.message
+                print(e.message)
                 break
             except ticketIsExitsException as e:
-                print e.message
+                print(e.message)
                 break
             except ticketNumOutException as e:
-                print e.message
+                print(e.message)
                 break
             except UserPasswordException as e:
-                print e.message
+                print(e.message)
                 break
             except ValueError as e:
                 if e.message == "No JSON object could be decoded":
