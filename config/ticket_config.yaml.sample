@@ -37,8 +37,8 @@ set:
 
   # 12306登录账号(list)
   12306account:
-    - user: "xzzhen4128"
-    - pwd: "1q2w3e4r"
+    - user: ""
+    - pwd: ""
 
 # 加入小黑屋时间，此功能为了防止僵尸票导致一直下单不成功错过正常的票
 ticket_black_list_time: 5
