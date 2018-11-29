@@ -18,7 +18,7 @@ set:
   from_station: "北京"
 
   # 到达城市 比如深圳北，就填深圳就搜得到
-  to_station: "驻马店11"
+  to_station: "驻马店"
 
   # 座位(list) 多个座位ex:
   # - "二等座"
