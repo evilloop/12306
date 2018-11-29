@@ -3,6 +3,7 @@ import copy
 import random
 import time
 from PIL import Image
+from wx.lib.pubsub import pub
 import os
 
 base_dir = os.path.dirname(os.path.dirname(__file__))
@@ -59,6 +60,7 @@ def getPassCodeNewOrderAndLogin(session, imgType):
                 opt_im = im.crop((pic_x, pic_y, pic_x+pic_w, pic_y+pic_h))
                 opt_im.save(os.path.join(pic_dir, './%d.png' % i))
             im.close()
+            pub.sendMessage('update_authcode', msg={})
             return True
     except OSError:
         print (u"验证码下载失败，可能ip被封，确认请手动请求: {0}".format(codeImgUrl))

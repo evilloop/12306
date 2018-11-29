@@ -23,12 +23,17 @@ class checkUser:
                 check_user_flag = check_user["data"]["flag"]
                 if check_user_flag is True:
                     wrapcache.set("user_time", datetime.datetime.now(), timeout=60 * CHENK_TIME)
+                    return True, '用户登录状态OK'
                 else:
                     if check_user['messages']:
                         print (ticket.LOGIN_SESSION_FAIL.format(check_user['messages']))
                         self.session.call_login()
                         wrapcache.set("user_time", datetime.datetime.now(), timeout=60 * CHENK_TIME)
+                        return False, ticket.LOGIN_SESSION_FAIL.format(check_user['messages'])
                     else:
                         print (ticket.LOGIN_SESSION_FAIL.format(check_user['messages']))
                         self.session.call_login()
                         wrapcache.set("user_time", datetime.datetime.now(), timeout=60 * CHENK_TIME)
+                        return False, ticket.LOGIN_SESSION_FAIL.format(check_user['messages'])
+        else:
+            return False, 'Unkown'

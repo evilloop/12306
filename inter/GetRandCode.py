@@ -92,3 +92,47 @@ def codexy(Ofset=None, is_raw_input=True):
     randCode = str(post).replace(']', '').replace('[', '').replace("'", '').replace(' ', '')
     print(u"验证码识别坐标为{0}".format(randCode))
     return randCode
+
+
+def select_codes_to_randcode(select_ids):
+    """
+
+    :param select_ids: 1,2,3
+    :return:
+    """
+    select_ids = select_ids.replace("，", ",")
+    select = select_ids.split(',')
+    post = []
+    offsetsX = 0  # 选择的答案的left值,通过浏览器点击8个小图的中点得到的,这样基本没问题
+    offsetsY = 0  # 选择的答案的top值
+    for ofset in select:
+        if ofset == '1':
+            offsetsY = 46
+            offsetsX = 42
+        elif ofset == '2':
+            offsetsY = 46
+            offsetsX = 105
+        elif ofset == '3':
+            offsetsY = 45
+            offsetsX = 184
+        elif ofset == '4':
+            offsetsY = 48
+            offsetsX = 256
+        elif ofset == '5':
+            offsetsY = 36
+            offsetsX = 117
+        elif ofset == '6':
+            offsetsY = 112
+            offsetsX = 115
+        elif ofset == '7':
+            offsetsY = 114
+            offsetsX = 181
+        elif ofset == '8':
+            offsetsY = 111
+            offsetsX = 252
+        else:
+            pass
+        post.append(offsetsX)
+        post.append(offsetsY)
+    randCode = str(post).replace(']', '').replace('[', '').replace("'", '').replace(' ', '')
+    return randCode

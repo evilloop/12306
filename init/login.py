@@ -4,10 +4,12 @@ from time import sleep
 from config.ticketConf import _get_yaml
 from damatuCode.damatuWeb import DamatuApi
 from inter.GetPassCodeNewOrderAndLogin import getPassCodeNewOrderAndLogin
-from inter.GetRandCode import getRandCode
+from inter.GetRandCode import getRandCode, select_codes_to_randcode
 from myException.UserPasswordException import UserPasswordException
 from myException.balanceException import balanceException
 from myUrllib import myurllib2
+from wx.lib.pubsub import pub
+import time
 
 
 class GoLogin:
@@ -16,6 +18,8 @@ class GoLogin:
         self.randCode = ""
         self.is_auto_code = is_auto_code
         self.auto_code_type = auto_code_type
+        self.user = ''
+        self.passwd = ''
 
     def auth(self):
         """认证"""
@@ -60,7 +64,7 @@ class GoLogin:
         }
         tresult = self.session.httpClint.send(logurl, logData)
         if 'result_code' in tresult and tresult["result_code"] == 0:
-            print (u"登录成功")
+            pub.SendMessage('log', msg="登录成功")
             tk = self.auth()
             if "newapptk" in tk and tk["newapptk"]:
                 return tk["newapptk"]
@@ -111,20 +115,27 @@ class GoLogin:
             if int(balance) < 40:
                 raise balanceException(u'余额不足，当前余额为: {}'.format(balance))
         user, passwd = _get_yaml()["set"]["12306account"][0]["user"], _get_yaml()["set"]["12306account"][1]["pwd"]
+        self.user, self.passwd = user, passwd
         if not user or not passwd:
             raise UserPasswordException(u"温馨提示: 用户名或者密码为空，请仔细检查")
-        login_num = 0
+        # login_num = 0
         while True:
             if not getPassCodeNewOrderAndLogin(session=self.session, imgType="login"):
                 continue
-            self.randCode = getRandCode(self.is_auto_code, self.auto_code_type)
-            login_num += 1
-            self.auth()
-            if self.codeCheck():
-                uamtk = self.baseLogin(user, passwd)
-                if uamtk:
-                    self.getUserName(uamtk)
-                    break
+            else:
+                # self.check_code()
+                break
+        pub.subscribe(self.check_code, 'rand_code')
+
+    def check_code(self, msg):
+        # self.randCode = getRandCode(self.is_auto_code, self.auto_code_type)
+        self.randCode = select_codes_to_randcode(msg)
+        # login_num += 1
+        self.auth()
+        if self.codeCheck():
+            uamtk = self.baseLogin(self.user, self.passwd)
+            if uamtk:
+                self.getUserName(uamtk)
 
     def logout(self):
         url = 'https://kyfw.12306.cn/otn/login/loginOut'

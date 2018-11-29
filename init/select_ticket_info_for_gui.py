@@ -168,7 +168,10 @@ class select:
         l = liftTicketInit(self)
         l.reqLiftTicketInit()
         self.call_login()
-        checkUser(self).sendCheckUser()
+        login_check_status, msg = checkUser(self).sendCheckUser()
+        if not login_check_status:
+            pub.sendMessage('log', msg=msg)
+        return
         from_station, to_station = self.station_table(self.from_station, self.to_station)
         num = 0
         while 1:

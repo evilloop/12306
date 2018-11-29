@@ -389,19 +389,22 @@ class MainPanel(wx.Panel):
 class AuthCodePanel(wx.Panel):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.code_buttons = []
         #
         self.sizer = wx.GridBagSizer(vgap=-3, hgap=-3)
         #
         self.load_codes_sizer()
+        pub.subscribe(self.reload_codes, 'update_authcode')
 
     def load_codes_sizer(self):
         self.sizer.Clear()
+        self.code_buttons = []
         top_pic = os.path.join(pic_dir, 'top.png')
         if not os.path.exists(top_pic):
             top_pic = os.path.join(pic_dir, 'default_top.png')
         top_img = wx.Image(opj(top_pic), wx.BITMAP_TYPE_PNG)
-        top_img_view = wx.StaticBitmap(self, -1, top_img.ConvertToBitmap(), size=(31, -1))
-        self.sizer.Add(top_img_view, flag=wx.EXPAND, span=(1,4), pos=(0,0))
+        self.top_img_view = wx.StaticBitmap(self, -1, top_img.ConvertToBitmap(), size=(31, -1))
+        self.sizer.Add(self.top_img_view, flag=wx.EXPAND, span=(1,4), pos=(0,0))
         for i in range(8):
             code_pic = os.path.join(pic_dir, '%d.png' % i)
             if not os.path.exists(code_pic):
@@ -410,16 +413,41 @@ class AuthCodePanel(wx.Panel):
             else:
                 code_img = wx.Image(opj(code_pic), wx.BITMAP_TYPE_PNG)
             code_img_bmp = code_img.ConvertToBitmap()
-            code_button = wx.BitmapButton(self, -1, code_img_bmp, size=(CODE_SIZE, CODE_SIZE))
+            self.code_button = wx.BitmapButton(self, -1, code_img_bmp, size=(CODE_SIZE, CODE_SIZE))
+            self.code_buttons.append(self.code_button)
+        for i in range(len(self.code_buttons)):
+            self.code_buttons[i].Bind(wx.EVT_BUTTON, self.onClickCodeButton)
             if i < 4:
                 pos_r = 1
                 pos_c = i
             else:
                 pos_r = 2
                 pos_c = i - 4
-            self.sizer.Add(code_button, pos=(pos_r, pos_c))
+            self.sizer.Add(self.code_buttons[i], pos=(pos_r, pos_c))
         self.SetSizer(self.sizer)
         self.Fit()
+
+    def reload_code_images(self):
+        top_pic = os.path.join(pic_dir, 'top.png')
+        top_img = wx.Image(opj(top_pic), wx.BITMAP_TYPE_PNG)
+        self.top_img_view = wx.StaticBitmap(self, -1, top_img.ConvertToBitmap(), size=(31, -1))
+        for i in range(len(self.code_buttons)):
+            code_pic = os.path.join(pic_dir, '%d.png' % i)
+            code_img = wx.Image(opj(code_pic), wx.BITMAP_TYPE_PNG)
+            code_img_bmp = code_img.ConvertToBitmap()
+            self.code_buttons[i].SetBitmap(code_img_bmp)
+
+    def reload_codes(self, msg=None):
+        self.reload_code_images()
+
+    def onClickCodeButton(self, evt: wx.CommandEvent):
+        default_bg_color = (236, 236, 236, 255)
+        # print(type(evt), evt.GetEventObject())
+        btn = evt.GetEventObject()  # type: wx.BitmapButton
+        if btn.GetBackgroundColour() != wx.GREEN:
+            btn.SetBackgroundColour(wx.GREEN)
+        else:
+            btn.SetBackgroundColour(default_bg_color)
 
 class Frame(wx.Frame):
 
@@ -453,7 +481,7 @@ class Frame(wx.Frame):
 
     def set_ui(self):
         screen_info = wx.GetClientDisplayRect()
-        self.SetSize((screen_info[2], screen_info[3]))
+        self.SetSize((screen_info[2], screen_info[3]/2))
         self.Centre()
 
         sizer = wx.GridBagSizer(hgap=5, vgap=5)  # type: wx.GridBagSizer
@@ -474,7 +502,7 @@ class Frame(wx.Frame):
         print(evt, evt.args)
 
     def process_log(self, msg):
-        self.log_list.AppendItem((now_str, msg))
+        self.log_list.AppendItem((now_str(), msg))
 
 class App(wx.App):
     def __init__(self, redirect=True, filename=None):
